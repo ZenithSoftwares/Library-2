@@ -3657,7 +3657,7 @@ function Heavenly:Window(config)
 
 		
 		if showDisplayName then
-			local displayNameLabel = Instance.new("TextLabel")
+			displayNameLabel = Instance.new("TextLabel")
 			displayNameLabel.Name = "DisplayName"
 			displayNameLabel.Text = LocalPlayer.DisplayName
 			displayNameLabel.TextColor3 = theme.Text
@@ -3673,7 +3673,7 @@ function Heavenly:Window(config)
 		end
 
 		if showUsername then
-			local usernameLabel = Instance.new("TextLabel")
+			usernameLabel = Instance.new("TextLabel")
 			usernameLabel.Name = "Username"
 			usernameLabel.Text = "@" .. LocalPlayer.Name
 			usernameLabel.TextColor3 = theme.TextDark
@@ -3687,6 +3687,20 @@ function Heavenly:Window(config)
 			usernameLabel.Parent = userSectionContainer
 			windowObject._UsernameLabel = usernameLabel
 		end
+
+		avatarSubLabel = Instance.new("TextLabel")
+		avatarSubLabel.Name = "DiscordLabel"
+		avatarSubLabel.Text = "discord.gg/tYJpUUs4vs"
+		avatarSubLabel.TextColor3 = theme.TextDark
+		avatarSubLabel.TextSize = 9
+		avatarSubLabel.Font = Enum.Font.Gotham
+		avatarSubLabel.BackgroundTransparency = 1
+		avatarSubLabel.TextXAlignment = Enum.TextXAlignment.Left
+		avatarSubLabel.TextTruncate = Enum.TextTruncate.None
+		avatarSubLabel.Size = UDim2.new(1, -62, 0, 10)
+		avatarSubLabel.Position = UDim2.new(0, 50, 0, showDisplayName and 36 or 22)
+		avatarSubLabel.Parent = userSectionContainer
+		windowObject._DiscordLabel = avatarSubLabel
 	end
 
 	--[[local avatarFrame = Instance.new("Frame")
