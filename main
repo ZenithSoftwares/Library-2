@@ -36,24 +36,22 @@ Zenith.UserSectionRightClick = false
 Zenith.USI = {}
 Zenith.UserSectionItems = Zenith.USI
 
-local Lib = {
-	TweenService = game:GetService("TweenService"),
-	UserInputService = game:GetService("UserInputService"),
-	Players = game:GetService("Players"),
-	HttpService = game:GetService("HttpService"),
-}
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
 
-Lib.LocalPlayer = Lib.Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer
 
 local Themes = {}
 Zenith.Themes = Themes
 
 do
 	local defaultColors = {
-		Main = Color3.fromRGB(5, 5, 5),
-		Second = Color3.fromRGB(12, 12, 12),
-		Stroke = Color3.fromRGB(40, 40, 40),
-		Divider = Color3.fromRGB(40, 40, 40),
+		Main = Color3.fromRGB(25, 25, 25),
+		Second = Color3.fromRGB(32, 32, 32),
+		Stroke = Color3.fromRGB(60, 60, 60),
+		Divider = Color3.fromRGB(60, 60, 60),
 		Text = Color3.fromRGB(240, 240, 240),
 		TextDark = Color3.fromRGB(150, 150, 150),
 		Accent = Color3.fromRGB(0, 170, 255),
@@ -70,10 +68,10 @@ do
 	end
 
 	Themes:Add("Dark", {
-		Main = Color3.fromRGB(5, 5, 5),
-		Second = Color3.fromRGB(12, 12, 12),
-		Stroke = Color3.fromRGB(40, 40, 40),
-		Divider = Color3.fromRGB(40, 40, 40),
+		Main = Color3.fromRGB(25, 25, 25),
+		Second = Color3.fromRGB(32, 32, 32),
+		Stroke = Color3.fromRGB(60, 60, 60),
+		Divider = Color3.fromRGB(60, 60, 60),
 		Text = Color3.fromRGB(240, 240, 240),
 		TextDark = Color3.fromRGB(150, 150, 150),
 		Accent = Color3.fromRGB(0, 170, 255),
@@ -122,7 +120,7 @@ end
 
 local function tweenObj(instance, duration, style, direction, props)
 	if not instance or not instance.Parent then return end
-	Lib.TweenService:Create(
+	TweenService:Create(
 		instance,
 		TweenInfo.new(duration, style or Enum.EasingStyle.Quad, direction or Enum.EasingDirection.Out),
 		props
@@ -193,10 +191,10 @@ local function makeDraggable(DragPoint, Main)
 				DragInput = Input
 			end
 		end)
-		Lib.UserInputService.InputChanged:Connect(function(Input)
+		UserInputService.InputChanged:Connect(function(Input)
 			if Input == DragInput and Dragging then
 				local Delta = Input.Position - MousePos
-				Lib.TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
 			end
 		end)
 	end)
@@ -431,16 +429,16 @@ Animations.Blob = function(mainWindow, screenGui, theme, startupText, startupIco
 		textLabel.Parent = morphFrame
 	end
 
-	local expandTween = Lib.TweenService:Create(morphFrame,
+	local expandTween = TweenService:Create(morphFrame,
 		TweenInfo.new(0.75, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, popupSize, 0, popupSize)})
 	expandTween:Play()
 	expandTween.Completed:Wait()
 
-	local morphTween = Lib.TweenService:Create(morphFrame,
+	local morphTween = TweenService:Create(morphFrame,
 		TweenInfo.new(0.55, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, finalWidth, 0, finalHeight)})
-	Lib.TweenService:Create(morphCorner,
+	TweenService:Create(morphCorner,
 		TweenInfo.new(0.55, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out),
 		{CornerRadius = UDim.new(0, 12)}):Play()
 	morphTween:Play()
@@ -448,7 +446,7 @@ Animations.Blob = function(mainWindow, screenGui, theme, startupText, startupIco
 
 	mainWindow.Visible = true
 	mainWindow.Size = UDim2.new(0, finalWidth + 6, 0, finalHeight + 6)
-	Lib.TweenService:Create(mainWindow,
+	TweenService:Create(mainWindow,
 		TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, finalWidth, 0, finalHeight)}):Play()
 	morphFrame:Destroy()
@@ -457,7 +455,7 @@ end
 Animations.Fade = function(mainWindow)
 	mainWindow.BackgroundTransparency = 1
 	mainWindow.Visible = true
-	Lib.TweenService:Create(mainWindow,
+	TweenService:Create(mainWindow,
 		TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 		{BackgroundTransparency = 0}):Play()
 end
@@ -531,7 +529,7 @@ Animations.Typewriter = function(mainWindow, screenGui, theme, startupText, star
 	task.wait(0.35)
 
 	mainWindow.Visible = true
-	Lib.TweenService:Create(overlayFrame,
+	TweenService:Create(overlayFrame,
 		TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 		{BackgroundTransparency = 1}):Play()
 	task.wait(0.45)
@@ -550,7 +548,7 @@ Animations.Bounce = function(mainWindow, screenGui, theme, startupText, startupI
 	mainWindow.Visible = true
 
 	local function tweenToY(yScale, duration, style, direction)
-		local tween = Lib.TweenService:Create(mainWindow,
+		local tween = TweenService:Create(mainWindow,
 			TweenInfo.new(duration, style, direction),
 			{Position = UDim2.new(centreX, 0, yScale, 0)})
 		tween:Play()
@@ -577,13 +575,13 @@ Animations.Unfold = function(mainWindow, screenGui, theme, startupText, startupI
 	mainWindow.ClipsDescendants = true
 	mainWindow.Visible = true
 
-	local widthTween = Lib.TweenService:Create(mainWindow,
+	local widthTween = TweenService:Create(mainWindow,
 		TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, finalWidth, 0, 1)})
 	widthTween:Play()
 	widthTween.Completed:Wait()
 
-	local heightTween = Lib.TweenService:Create(mainWindow,
+	local heightTween = TweenService:Create(mainWindow,
 		TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, finalWidth, 0, finalHeight)})
 	heightTween:Play()
@@ -609,13 +607,13 @@ Animations.ElasticMaximize = function(minimizedFrame, targetSize, targetPos, onC
 
 	minimizedFrame.Visible = false
 
-	local anticipationTween = Lib.TweenService:Create(elasticFrame,
+	local anticipationTween = TweenService:Create(elasticFrame,
 		TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 		{Size = UDim2.new(0, minimizedFrame.AbsoluteSize.X * 0.9, 0, minimizedFrame.AbsoluteSize.Y * 0.9)})
 	anticipationTween:Play()
 	anticipationTween.Completed:Wait()
 
-	local expandTween = Lib.TweenService:Create(elasticFrame,
+	local expandTween = TweenService:Create(elasticFrame,
 		TweenInfo.new(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, 1, 0.3),
 		{Size = targetSize, Position = targetPos})
 	expandTween:Play()
@@ -631,7 +629,7 @@ Animations.ElasticMaximize = function(minimizedFrame, targetSize, targetPos, onC
 	ripple.Parent = elasticFrame
 	addCorner(ripple, 1, 0)
 
-	Lib.TweenService:Create(ripple,
+	TweenService:Create(ripple,
 		TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		{Size = UDim2.new(1.5, 0, 1.5, 0), BackgroundTransparency = 1}):Play()
 
@@ -1127,7 +1125,7 @@ function Zenith:CNotify(config)
 			local blur = Instance.new("BlurEffect")
 			blur.Size = 0
 			blur.Parent = game:GetService("Lighting")
-			Lib.TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
+			TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
 			tweenObj(backdrop, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {BackgroundTransparency = 0.45})
 			
 			local modalcard = Instance.new("Frame")
@@ -1143,13 +1141,13 @@ function Zenith:CNotify(config)
 			
 			local animStyle = "Blob"
 			if animStyle == "Blob" or animStyle == "Bounce" then
-				Lib.TweenService:Create(modalcard, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				TweenService:Create(modalcard, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 					{Size = UDim2.new(0, 420, 0, 0)}):Play()
 				task.wait(0.1)
-				Lib.TweenService:Create(modalcard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+				TweenService:Create(modalcard, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 					{Size = UDim2.new(0, 420, 0, 220)}):Play()
 			else
-				Lib.TweenService:Create(modalcard, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+				TweenService:Create(modalcard, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 					{Size = UDim2.new(0, 420, 0, 220)}):Play()
 			end
 			
@@ -1201,9 +1199,9 @@ function Zenith:CNotify(config)
 			closeBtn.Parent = mGui
 			
 			local function dismissM()
-				Lib.TweenService:Create(blur, TweenInfo.new(0.25), {Size = 0}):Play()
+				TweenService:Create(blur, TweenInfo.new(0.25), {Size = 0}):Play()
 				tweenObj(backdrop, 0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {BackgroundTransparency = 1})
-				Lib.TweenService:Create(modalcard, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+				TweenService:Create(modalcard, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In),
 					{Size = UDim2.new(0, 0, 0, 0)}):Play()
 				task.wait(0.28)
 				blur:Destroy()
@@ -1962,7 +1960,7 @@ function Zenith:Topbar(theme)
 
 	local function closeSearch(onComplete)
 		searchOpen = false
-		local closeTween = Lib.TweenService:Create(searchPanel,
+		local closeTween = TweenService:Create(searchPanel,
 			TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 			{BackgroundTransparency = 1, Size = UDim2.new(0, panelWidth, 0, 0)})
 		tweenObj(searchIcon, 0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out,
@@ -3659,7 +3657,7 @@ function Zenith:Window(config)
 
 		
 		if showDisplayName then
-			displayNameLabel = Instance.new("TextLabel")
+			local displayNameLabel = Instance.new("TextLabel")
 			displayNameLabel.Name = "DisplayName"
 			displayNameLabel.Text = LocalPlayer.DisplayName
 			displayNameLabel.TextColor3 = theme.Text
@@ -3675,7 +3673,7 @@ function Zenith:Window(config)
 		end
 
 		if showUsername then
-			usernameLabel = Instance.new("TextLabel")
+			local usernameLabel = Instance.new("TextLabel")
 			usernameLabel.Name = "Username"
 			usernameLabel.Text = "@" .. LocalPlayer.Name
 			usernameLabel.TextColor3 = theme.TextDark
@@ -3689,20 +3687,6 @@ function Zenith:Window(config)
 			usernameLabel.Parent = userSectionContainer
 			windowObject._UsernameLabel = usernameLabel
 		end
-
-		avatarSubLabel = Instance.new("TextLabel")
-		avatarSubLabel.Name = "DiscordLabel"
-		avatarSubLabel.Text = "discord.gg/tYJpUUs4vs"
-		avatarSubLabel.TextColor3 = theme.TextDark
-		avatarSubLabel.TextSize = 9
-		avatarSubLabel.Font = Enum.Font.Gotham
-		avatarSubLabel.BackgroundTransparency = 1
-		avatarSubLabel.TextXAlignment = Enum.TextXAlignment.Left
-		avatarSubLabel.TextTruncate = Enum.TextTruncate.None
-		avatarSubLabel.Size = UDim2.new(1, -62, 0, 10)
-		avatarSubLabel.Position = UDim2.new(0, 50, 0, showDisplayName and 36 or 22)
-		avatarSubLabel.Parent = userSectionContainer
-		windowObject._DiscordLabel = avatarSubLabel
 	end
 
 	--[[local avatarFrame = Instance.new("Frame")
@@ -4229,8 +4213,8 @@ function Zenith:Window(config)
 		if activeTabPage then activeTabPage.Visible = false end
 		if activeTabButton then
 			activeTabButton.Title.Font = Enum.Font.GothamSemibold
-			tweenObj(activeTabButton.Ico, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {ImageTransparency = 0.4, ImageColor3 = theme.Text})
-			tweenObj(activeTabButton.Title, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {TextTransparency = sidebarExpanded and 0.4 or 1, TextColor3 = theme.Text})
+			tweenObj(activeTabButton.Ico, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {ImageTransparency = 0.4})
+			tweenObj(activeTabButton.Title, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {TextTransparency = sidebarExpanded and 0.4 or 1})
 		end
 		activeTabPage = page
 		activeTabButton = button
@@ -4242,8 +4226,8 @@ function Zenith:Window(config)
 		end
 		if button then
 			button.Title.Font = Enum.Font.GothamBlack
-			tweenObj(button.Ico, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {ImageTransparency = 0, ImageColor3 = accentColor})
-			tweenObj(button.Title, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {TextTransparency = sidebarExpanded and 0 or 1, TextColor3 = accentColor})
+			tweenObj(button.Ico, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {ImageTransparency = 0})
+			tweenObj(button.Title, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {TextTransparency = sidebarExpanded and 0 or 1})
 		end
 	end
 
@@ -4594,7 +4578,10 @@ function Zenith:Window(config)
 				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = theme.Second})
 			end)
 			clickButton.MouseButton1Down:Connect(function()
-				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = accentColor})
+				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = Color3.fromRGB(
+					math.clamp(theme.Second.R * 255 + 6, 0, 255),
+					math.clamp(theme.Second.G * 255 + 6, 0, 255),
+					math.clamp(theme.Second.B * 255 + 6, 0, 255))})
 			end)
 			clickButton.MouseButton1Up:Connect(function()
 				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = Color3.fromRGB(
