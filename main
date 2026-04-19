@@ -9,6 +9,7 @@ Zenith._BindListGui = nil
 Zenith._TopbarGui = nil
 Zenith._RadialGui = nil
 Zenith.InteractionSound = "rbxassetid://2782456497334"
+Zenith.PremiumBlur = true 
 
 Zenith.ShowKeybindList = false
 Zenith.ShowTopbar = false
@@ -49,13 +50,13 @@ Zenith.Themes = Themes
 
 do
 	local defaultColors = {
-		Main = Color3.fromRGB(25, 25, 25),
-		Second = Color3.fromRGB(32, 32, 32),
-		Stroke = Color3.fromRGB(60, 60, 60),
-		Divider = Color3.fromRGB(60, 60, 60),
-		Text = Color3.fromRGB(240, 240, 240),
-		TextDark = Color3.fromRGB(150, 150, 150),
-		Accent = Color3.fromRGB(0, 170, 255),
+		Main = Color3.fromRGB(18, 18, 22),
+		Second = Color3.fromRGB(24, 24, 30),
+		Stroke = Color3.fromRGB(50, 45, 65),
+		Divider = Color3.fromRGB(50, 45, 65),
+		Text = Color3.fromRGB(240, 240, 245),
+		TextDark = Color3.fromRGB(160, 150, 190),
+		Accent = Color3.fromRGB(160, 100, 255), -- Lila Primary
 	}
 
 	function Themes:Add(name, cfg)
@@ -89,13 +90,13 @@ do
 	})
 
 	Themes:Add("Midnight", {
-		Main = Color3.fromRGB(15, 15, 25),
-		Second = Color3.fromRGB(25, 25, 40),
-		Stroke = Color3.fromRGB(60, 60, 90),
-		Divider = Color3.fromRGB(60, 60, 90),
-		Text = Color3.fromRGB(230, 230, 255),
-		TextDark = Color3.fromRGB(140, 140, 180),
-		Accent = Color3.fromRGB(100, 80, 255),
+		Main = Color3.fromRGB(12, 10, 20),
+		Second = Color3.fromRGB(18, 15, 30),
+		Stroke = Color3.fromRGB(50, 40, 80),
+		Divider = Color3.fromRGB(50, 40, 80),
+		Text = Color3.fromRGB(235, 230, 255),
+		TextDark = Color3.fromRGB(140, 130, 180),
+		Accent = Color3.fromRGB(180, 120, 255), -- Vibrant Lila
 	})
 
 	Themes:Add("Crimson", {
@@ -738,13 +739,14 @@ function Zenith:Notify(configOrText, durationArg)
 		local notifTheme = getNotifTheme()
 		local card = Instance.new("Frame")
 		card.BackgroundColor3 = notifTheme.Second
+		card.BackgroundTransparency = 0.2 -- Glassmorphism
 		card.BorderSizePixel = 0
 		card.Size = UDim2.new(0, notifWidth, 0, 0)
 		card.AutomaticSize = Enum.AutomaticSize.Y
 		card.Position = UDim2.new(1, 10, 0, 0)
 		card.Parent = wrapper
-		addCorner(card, 0, 8)
-		addStroke(card, notifTheme.Stroke, 1)
+		addCorner(card, 0, 10)
+		addStroke(card, notifTheme.Accent or theme.Accent, 1.2)
 		
 		local dismissBtn = Instance.new("TextButton")
 		dismissBtn.Text = ""
@@ -753,6 +755,7 @@ function Zenith:Notify(configOrText, durationArg)
 		dismissBtn.ZIndex = 6
 		dismissBtn.Parent = card
 		dismissBtn.MouseButton2Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			for index, ent in ipairs(notifStack) do
 				if ent == stackEntry then
 					table.remove(notifStack, index)
@@ -777,6 +780,7 @@ function Zenith:Notify(configOrText, durationArg)
 			clickBtn.ZIndex = 5
 			clickBtn.Parent = card
 			clickBtn.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				pcall(onClick)
 			end)
 		end
@@ -1875,7 +1879,7 @@ function Zenith:Topbar(theme)
 
 	local searchPanel = Instance.new("Frame")
 	searchPanel.BackgroundColor3 = panelBgColor
-	searchPanel.BackgroundTransparency = 0
+	searchPanel.BackgroundTransparency = 0.2 -- Glassmorphism
 	searchPanel.BorderSizePixel = 0
 	searchPanel.AnchorPoint = Vector2.new(0, 0)
 	searchPanel.Size = UDim2.new(0, panelWidth, 0, collapsedHeight)
@@ -1884,8 +1888,8 @@ function Zenith:Topbar(theme)
 	searchPanel.ClipsDescendants = false
 	searchPanel.Visible = false
 	searchPanel.Parent = screenGui
-	addCorner(searchPanel, 0, 8)
-	addStroke(searchPanel, strokeColor, 1)
+	addCorner(searchPanel, 0, 10)
+	addStroke(searchPanel, theme.Accent, 1)
 
 	local function syncPanel()
 		if not searchPanel or not topbarPanel then return end
@@ -2070,11 +2074,14 @@ function Zenith:Topbar(theme)
 				valueBadge.Parent = resultRow
 			end
 
+			local scale = Instance.new("UIScale", resultRow)
 			resultRow.MouseEnter:Connect(function()
-				tweenObj(resultRow, 0.1, nil, nil, {BackgroundTransparency = 0.1})
+				tweenObj(resultRow, 0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {BackgroundTransparency = 0.1, BackgroundColor3 = theme.Accent})
+				tweenObj(scale, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {Scale = 1.02})
 			end)
 			resultRow.MouseLeave:Connect(function()
-				tweenObj(resultRow, 0.1, nil, nil, {BackgroundTransparency = 0.3})
+				tweenObj(resultRow, 0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {BackgroundTransparency = 0.3, BackgroundColor3 = buttonBgColor})
+				tweenObj(scale, 0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Scale = 1})
 			end)
 
 			resultRow.MouseButton1Click:Connect(function()
@@ -2291,15 +2298,15 @@ function Zenith:Radial(theme)
 
 		local card = Instance.new("Frame")
 		card.BackgroundColor3 = secondColor
-		card.BackgroundTransparency = 0.12
+		card.BackgroundTransparency = 0.2 -- Glassmorphism
 		card.BorderSizePixel = 0
 		card.AnchorPoint = Vector2.new(0.5, 0.5)
 		card.Size = UDim2.new(0, cardWidth, 0, cardHeight)
 		card.Position = UDim2.new(0.5, posX, 0.5, posY)
 		card.ZIndex = 3
 		card.Parent = container
-		addCorner(card, 0, 10)
-		addStroke(card, strokeColor, 1)
+		addCorner(card, 0, 12)
+		addStroke(card, theme.Accent, 1.2)
 
 		local cardIcon = nil
 		local cardLabel = nil
@@ -3079,23 +3086,33 @@ function Zenith:Window(config)
 	local mainWindow = Instance.new("Frame")
 	mainWindow.Name = "MainWindow"
 	mainWindow.BackgroundColor3 = theme.Main
+	mainWindow.BackgroundTransparency = 0.15 -- Glassmorphism base
 	mainWindow.BorderSizePixel = 0
 	mainWindow.Position = UDim2.new(0.5, -307, 0.5, -172)
 	mainWindow.Size = UDim2.new(0, 615, 0, 344)
 	mainWindow.ClipsDescendants = true
 	mainWindow.Visible = false
 	mainWindow.Parent = screenGui
-	addCorner(mainWindow, 0, 10)
+	addCorner(mainWindow, 0, 12)
+
+	if Zenith.PremiumBlur then
+		local blur = Instance.new("BlurEffect")
+		blur.Size = 25
+		blur.Parent = game:GetService("Lighting")
+		-- We'll link blur visibility to window visibility later if needed
+	end
 
 	local windowStroke = addStroke(mainWindow, theme.Stroke, 1.5)
 
 	Zenith._MainWindowRef = mainWindow
 
 	local topBar = Instance.new("Frame")
-	topBar.BackgroundTransparency = 1
+	topBar.BackgroundColor3 = theme.Second
+	topBar.BackgroundTransparency = 0.4 -- Glassmorphism
 	topBar.Size = UDim2.new(1, 0, 0, 50)
 	topBar.ZIndex = 3
 	topBar.Parent = mainWindow
+	addCorner(topBar, 0, 12)
 
 	local topBarDivider = Instance.new("Frame")
 	topBarDivider.BackgroundColor3 = theme.Stroke
@@ -3297,16 +3314,18 @@ function Zenith:Window(config)
 	local sidebar = Instance.new("Frame")
 	sidebar.Name = "Sidebar"
 	sidebar.BackgroundColor3 = theme.Second
+	sidebar.BackgroundTransparency = 0.35 -- Glassmorphism
 	sidebar.BorderSizePixel = 0
 	sidebar.Size = UDim2.new(0, 150, 1, -50)
 	sidebar.Position = UDim2.new(0, 0, 0, 50)
 	sidebar.ZIndex = 3
 	sidebar.Parent = mainWindow
 	sidebar.ClipsDescendants = true
-	addCorner(sidebar, 0, 10)
+	addCorner(sidebar, 0, 12)
 
 	local sidebarTopCover = Instance.new("Frame")
 	sidebarTopCover.BackgroundColor3 = theme.Second
+	sidebarTopCover.BackgroundTransparency = 1 -- Hide covers for glass effect
 	sidebarTopCover.BorderSizePixel = 0
 	sidebarTopCover.Size = UDim2.new(1, 0, 0, 10)
 	sidebarTopCover.Position = UDim2.new(0, 0, 0, 0)
@@ -3314,6 +3333,7 @@ function Zenith:Window(config)
 
 	local sidebarRightCover = Instance.new("Frame")
 	sidebarRightCover.BackgroundColor3 = theme.Second
+	sidebarRightCover.BackgroundTransparency = 1
 	sidebarRightCover.BorderSizePixel = 0
 	sidebarRightCover.Size = UDim2.new(0, 10, 1, 0)
 	sidebarRightCover.Position = UDim2.new(1, -10, 0, 0)
@@ -3321,6 +3341,7 @@ function Zenith:Window(config)
 
 	local sidebarDivider = Instance.new("Frame")
 	sidebarDivider.BackgroundColor3 = theme.Stroke
+	sidebarDivider.BackgroundTransparency = 0.5
 	sidebarDivider.BorderSizePixel = 0
 	sidebarDivider.Size = UDim2.new(0, 1, 1, 0)
 	sidebarDivider.Position = UDim2.new(1, -1, 0, 0)
@@ -4230,7 +4251,11 @@ function Zenith:Window(config)
 	Zenith._MinimizedRef = function() return isMinimized end
 
 	local function selectTab(page, button)
-		if activeTabPage then activeTabPage.Visible = false end
+		if activeTabPage then 
+			local previousPage = activeTabPage
+			tweenObj(previousPage, 0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.In, {BackgroundTransparency = 1})
+			task.delay(0.2, function() previousPage.Visible = false end)
+		end
 		if activeTabButton then
 			activeTabButton.Title.Font = Enum.Font.GothamSemibold
 			tweenObj(activeTabButton.Ico, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {ImageTransparency = 0.4})
@@ -4240,9 +4265,14 @@ function Zenith:Window(config)
 		activeTabButton = button
 		if page then
 			page.Visible = true
+			page.BackgroundTransparency = 1
 			local sidebarWidth = sidebarExpanded and 150 or 50
 			page.Size = UDim2.new(1, -sidebarWidth, 1, -50)
-			page.Position = UDim2.new(0, sidebarWidth, 0, 50)
+			page.Position = UDim2.new(0, sidebarWidth + 10, 0, 50) -- Start offset
+			tweenObj(page, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 1, -- Pages are usually transparent scrolling frames
+				Position = UDim2.new(0, sidebarWidth, 0, 50)
+			})
 		end
 		if button then
 			button.Title.Font = Enum.Font.GothamBlack
@@ -4573,6 +4603,7 @@ function Zenith:Window(config)
 		if #allTabs == 1 then selectTab(tabPage, tabButton) end
 
 		tabButton.MouseButton1Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			selectTab(tabPage, tabButton)
 		end)
 
@@ -4588,26 +4619,41 @@ function Zenith:Window(config)
 		end
 
 		local function applyHover(clickButton, targetFrame)
+			local scale = targetFrame:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", targetFrame)
+			local stroke = targetFrame:FindFirstChildOfClass("UIStroke")
+
 			clickButton.MouseEnter:Connect(function()
-				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = Color3.fromRGB(
-					math.clamp(theme.Second.R * 255 + 3, 0, 255),
-					math.clamp(theme.Second.G * 255 + 3, 0, 255),
-					math.clamp(theme.Second.B * 255 + 3, 0, 255))})
+				tweenObj(targetFrame, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+					BackgroundColor3 = Color3.fromRGB(
+						math.clamp(theme.Second.R * 255 + 5, 0, 255),
+						math.clamp(theme.Second.G * 255 + 2, 0, 255),
+						math.clamp(theme.Second.B * 255 + 10, 0, 255)
+					),
+					BackgroundTransparency = 0.2
+				})
+				if stroke then
+					tweenObj(stroke, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Color = theme.Accent, Transparency = 0.3})
+				end
+				tweenObj(scale, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {Scale = 1.02})
 			end)
+
 			clickButton.MouseLeave:Connect(function()
-				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = theme.Second})
+				tweenObj(targetFrame, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+					BackgroundColor3 = theme.Second,
+					BackgroundTransparency = 0
+				})
+				if stroke then
+					tweenObj(stroke, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Color = theme.Stroke, Transparency = 0})
+				end
+				tweenObj(scale, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Scale = 1})
 			end)
+
 			clickButton.MouseButton1Down:Connect(function()
-				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = Color3.fromRGB(
-					math.clamp(theme.Second.R * 255 + 6, 0, 255),
-					math.clamp(theme.Second.G * 255 + 6, 0, 255),
-					math.clamp(theme.Second.B * 255 + 6, 0, 255))})
+				tweenObj(scale, 0.1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Scale = 0.96})
 			end)
+
 			clickButton.MouseButton1Up:Connect(function()
-				tweenObj(targetFrame, 0.25, nil, nil, {BackgroundColor3 = Color3.fromRGB(
-					math.clamp(theme.Second.R * 255 + 3, 0, 255),
-					math.clamp(theme.Second.G * 255 + 3, 0, 255),
-					math.clamp(theme.Second.B * 255 + 3, 0, 255))})
+				tweenObj(scale, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {Scale = 1.02})
 			end)
 		end
 
@@ -5268,6 +5314,7 @@ function Zenith:Window(config)
 				applyHover(clickButton, outerFrame)
 				clickButton.MouseButton1Up:Connect(function()
 					if toggleObj.Locked then return end
+					playSound(Zenith.InteractionSound)
 					toggleObj:Set(not toggleObj.Value)
 					if doSaveConfig then saveFlags(configFolder, configFile) end
 				end)
