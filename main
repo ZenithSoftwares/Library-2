@@ -9,7 +9,7 @@ Zenith._BindListGui = nil
 Zenith._TopbarGui = nil
 Zenith._RadialGui = nil
 Zenith.InteractionSound = "rbxassetid://2782456497334"
-Zenith.PremiumBlur = true 
+Zenith.PremiumBlur = false 
 
 Zenith.ShowKeybindList = false
 Zenith.ShowTopbar = false
@@ -133,10 +133,12 @@ local function playSound(soundId)
 	if not soundId or soundId == "" then return end
 	local sound = Instance.new("Sound")
 	sound.SoundId = (tonumber(soundId) and "rbxassetid://" .. soundId) or soundId
-	sound.Volume = 0.5
+	sound.Volume = 1 -- Increased volume
 	sound.Parent = game:GetService("SoundService")
 	sound:Play()
-	sound.Ended:Connect(function() sound:Destroy() end)
+	task.delay(5, function()
+		if sound then sound:Destroy() end
+	end)
 end
 
 local function addCorner(parent, scale, offset)
@@ -1129,10 +1131,13 @@ function Zenith:CNotify(config)
 			backdrop.ZIndex = 1
 			backdrop.Parent = mGui
 			
-			local blur = Instance.new("BlurEffect")
-			blur.Size = 0
-			blur.Parent = game:GetService("Lighting")
-			TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
+			if Zenith.PremiumBlur then
+				local blur = Instance.new("BlurEffect")
+				blur.Size = 0
+				blur.Name = "_ZenithModalBlur"
+				blur.Parent = game:GetService("Lighting")
+				TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
+			end
 			tweenObj(backdrop, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {BackgroundTransparency = 0.45})
 			
 			local modalcard = Instance.new("Frame")
@@ -1298,10 +1303,13 @@ function Zenith:Modal(config)
 	backdrop.ZIndex = 1
 	backdrop.Parent = mGui
 
-	local blur = Instance.new("BlurEffect")
-	blur.Size = 0
-	blur.Parent = game:GetService("Lighting")
-	TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
+	if Zenith.PremiumBlur then
+		local blur = Instance.new("BlurEffect")
+		blur.Size = 0
+		blur.Name = "_ZenithModalBlur"
+		blur.Parent = game:GetService("Lighting")
+		TweenService:Create(blur, TweenInfo.new(0.3), {Size = 20}):Play()
+	end
 	tweenObj(backdrop, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {BackgroundTransparency = 0.45})
 
 	local notifTheme = getNotifTheme()
@@ -1413,13 +1421,15 @@ function Zenith:Modal(config)
 	dismissLbl.Parent = modalcard
 
 	local function dismissM()
-		task.cancel(pulseTask)
-		TweenService:Create(blur, TweenInfo.new(0.25), {Size = 0}):Play()
+		if game:GetService("Lighting"):FindFirstChild("_ZenithModalBlur") then
+			local blur = game:GetService("Lighting")._ZenithModalBlur
+			TweenService:Create(blur, TweenInfo.new(0.25), {Size = 0}):Play()
+			task.delay(0.26, function() blur:Destroy() end)
+		end
 		tweenObj(backdrop, 0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {BackgroundTransparency = 1})
 		TweenService:Create(modalcard, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In),
 			{Size = UDim2.new(0, 0, 0, 0)}):Play()
 		task.wait(0.28)
-		blur:Destroy()
 		mGui:Destroy()
 		pcall(onClose)
 	end
@@ -3099,7 +3109,6 @@ function Zenith:Window(config)
 		local blur = Instance.new("BlurEffect")
 		blur.Size = 25
 		blur.Parent = game:GetService("Lighting")
-		-- We'll link blur visibility to window visibility later if needed
 	end
 
 	local windowStroke = addStroke(mainWindow, theme.Stroke, 1.5)
