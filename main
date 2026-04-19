@@ -8,6 +8,7 @@ Zenith.Binds = {}
 Zenith._BindListGui = nil
 Zenith._TopbarGui = nil
 Zenith._RadialGui = nil
+Zenith.InteractionSound = "rbxassetid://2782456497334"
 
 Zenith.ShowKeybindList = false
 Zenith.ShowTopbar = false
@@ -1089,6 +1090,7 @@ function Zenith:CNotify(config)
 		hoverDetector.MouseLeave:Connect(function() isHovering = false end)
 		
 		hoverDetector.MouseButton2Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			for index, ent in ipairs(notifStack) do
 				if ent == stackEntry then
 					table.remove(notifStack, index)
@@ -1104,6 +1106,7 @@ function Zenith:CNotify(config)
 		end)
 
 		hoverDetector.MouseButton1Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			if onClick then pcall(onClick) end
 			if not additional or additional == "" then return end
 			
@@ -1208,7 +1211,10 @@ function Zenith:CNotify(config)
 				mGui:Destroy()
 			end
 			
-			closeBtn.MouseButton1Click:Connect(dismissM)
+			closeBtn.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
+				dismissM()
+			end)
 		end)
 
 		task.defer(function()
@@ -1420,7 +1426,10 @@ function Zenith:Modal(config)
 	closeBtn.Size = UDim2.new(1, 0, 1, 0)
 	closeBtn.ZIndex = 4
 	closeBtn.Parent = mGui
-	closeBtn.MouseButton1Click:Connect(dismissM)
+	closeBtn.MouseButton1Click:Connect(function()
+		playSound(Zenith.InteractionSound)
+		dismissM()
+	end)
 end
 
 local function saveFlags(folder, file)
@@ -1588,6 +1597,7 @@ function Zenith:Topbar(theme)
 			tweenObj(expandBtn, 0.15, nil, nil, {TextColor3 = textDarkColor})
 		end)
 		expandBtn.MouseButton1Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			isExpanded = not isExpanded
 			expandBtn.Text = isExpanded and "x" or "..."
 			local targetHeight = isExpanded and expandedHeight or collapsedHeight
@@ -1676,6 +1686,7 @@ function Zenith:Topbar(theme)
 			hideTooltip()
 		end)
 		tabButton.MouseButton1Click:Connect(function()
+			playSound(Zenith.InteractionSound)
 			hideTooltip()
 			tweenObj(tabButton, 0.07, nil, nil, {BackgroundColor3 = accentColor})
 			tweenObj(tabButton, 0.22, nil, nil, {BackgroundColor3 = buttonBgColor})
@@ -1743,6 +1754,7 @@ function Zenith:Topbar(theme)
 			end)
 
 			ownerBtn.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				hideTooltip()
 				tweenObj(ownerBtn, 0.07, nil, nil, {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
 				tweenObj(ownerBtn, 0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out,
@@ -1805,6 +1817,7 @@ function Zenith:Topbar(theme)
 							tweenObj(optLbl, 0.12, nil, nil, {TextTransparency = 0.2})
 						end)
 						optBtn.MouseButton1Click:Connect(function()
+							playSound(Zenith.InteractionSound)
 							dropMenu:Destroy()
 							pcall(btnConfig.Callback, option)
 						end)
@@ -2065,6 +2078,7 @@ function Zenith:Topbar(theme)
 			end)
 
 			resultRow.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				local targetTab = entry.tab
 				if targetTab then
 					closeSearch(function()
@@ -2104,6 +2118,7 @@ function Zenith:Topbar(theme)
 		end
 	end)
 	searchButton.MouseButton1Click:Connect(function()
+		playSound(Zenith.InteractionSound)
 		if searchOpen then closeSearch(nil) else openSearch() end
 	end)
 
@@ -2340,6 +2355,7 @@ function Zenith:Radial(theme)
 	local cachedCenterY = 0
 	local generation = 0
 	local function openWheel()
+		playSound(Zenith.InteractionSound)
 		if isOpen then return end
 		isOpen = true
 		generation = generation + 1
@@ -2588,6 +2604,7 @@ function Zenith:Radial(theme)
 		UserInputService.InputBegan:Connect(function(input, gameProcessed)
 			if not isOpen then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				if hoveredIndex then playSound(Zenith.InteractionSound) end
 				closeWheel(hoveredIndex)
 			end
 		end)
@@ -2606,7 +2623,10 @@ function Zenith:Radial(theme)
 	if Zenith.RadialMode == "hold" then
 		UserInputService.InputEnded:Connect(function(input)
 			if input.KeyCode ~= Zenith.RadialHotkey then return end
-			if isOpen then closeWheel(hoveredIndex) end
+			if isOpen then 
+				if hoveredIndex then playSound(Zenith.InteractionSound) end
+				closeWheel(hoveredIndex) 
+			end
 		end)
 	end
 
@@ -4700,9 +4720,11 @@ function Zenith:Window(config)
 			end
 
 			prevBtn.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				stepObj:Set(cIndx - 1)
 			end)
 			nextBtn.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				stepObj:Set(cIndx + 1)
 			end)
 
@@ -5010,7 +5032,10 @@ function Zenith:Window(config)
 			clickButton.Parent = frame
 
 			applyHover(clickButton, frame)
-			clickButton.MouseButton1Up:Connect(function() task.spawn(resolvedCb) end)
+			clickButton.MouseButton1Up:Connect(function()
+				playSound(Zenith.InteractionSound)
+				task.spawn(resolvedCb)
+			end)
 
 			local obj = {Type = "Button"}
 			function obj:Set(t) nameLabel.Text = tostring(t) end
@@ -5179,6 +5204,7 @@ function Zenith:Window(config)
 				end
 
 				confirmYes.MouseButton1Click:Connect(function()
+					playSound(Zenith.InteractionSound)
 					closeConfirm()
 					toggleObj.Value = not toggleObj.Value
 					tweenObj(checkboxFrame, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out,
@@ -5193,7 +5219,10 @@ function Zenith:Window(config)
 					if doSaveConfig then saveFlags(configFolder, configFile) end
 				end)
 
-				confirmNo.MouseButton1Click:Connect(closeConfirm)
+				confirmNo.MouseButton1Click:Connect(function()
+					playSound(Zenith.InteractionSound)
+					closeConfirm()
+				end)
 
 				local clickButton2 = Instance.new("TextButton")
 				clickButton2.Text = ""
@@ -5340,7 +5369,10 @@ function Zenith:Window(config)
 				end
 				if t ~= "" then pcall(resolvedCb, t) end
 			end)
-			clickButton.MouseButton1Up:Connect(function() inputBox:CaptureFocus() end)
+			clickButton.MouseButton1Up:Connect(function()
+				playSound(Zenith.InteractionSound)
+				inputBox:CaptureFocus()
+			end)
 			applyHover(clickButton, frame)
 
 			local obj = {Type = "TextBox"}
@@ -5450,6 +5482,7 @@ function Zenith:Window(config)
 			local lastClickTime = 0
 			sliderTrack.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					playSound(Zenith.InteractionSound)
 					local now = tick()
 					if now - lastClickTime < 0.35 then
 						sliderDragging = false
@@ -5755,6 +5788,7 @@ function Zenith:Window(config)
 						end
 					end)
 					optionButton.MouseButton1Click:Connect(function()
+						playSound(Zenith.InteractionSound)
 						dropdown:Set(option)
 					end)
 					dropdown.Buttons[option] = optionButton
@@ -5793,6 +5827,7 @@ function Zenith:Window(config)
 			end
 
 			clickButton.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				dropdown.Toggled = not dropdown.Toggled
 				headerFrame.Line.Visible = dropdown.Toggled
 				tweenObj(headerFrame.Ico, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {Rotation = dropdown.Toggled and 180 or 0})
@@ -5897,6 +5932,7 @@ function Zenith:Window(config)
 			clickButton.InputEnded:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					if bind.Binding then return end
+					playSound(Zenith.InteractionSound)
 					bind.Binding = true
 					bindBox.Value.Text = "..."
 				end
@@ -6136,6 +6172,7 @@ function Zenith:Window(config)
 			end
 
 			clickButton.MouseButton1Click:Connect(function()
+				playSound(Zenith.InteractionSound)
 				colorpicker.Toggled = not colorpicker.Toggled
 				tweenObj(colorpickerFrame, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out,
 					{Size = colorpicker.Toggled and UDim2.new(1, 0, 0, 148) or UDim2.new(1, 0, 0, 38)})
